@@ -10,10 +10,11 @@
 (define (gen-all-pos)
   (define thepos '(0 1 2))
   (filter (lambda (x) (not (and (equal? (cadr x) 1) (equal? (caddr x) 1)))) (cartesian-product thepos thepos thepos)))
-(define (index-to-point a b c cx cy dim)
-  (define edgelength (/ (* (- 3 a) dim) 2))
-  (cons (+(- cx edgelength) (* b edgelength))
-        (+ (- cy edgelength) (* c edgelength))))
+
+(define (index-to-point index)  ;;index is list of indices
+  (define edgelength (/ (* (- 3 (car index)) a) 2))
+  (cons (+ (* (car index) a/2) (* (caddr index) edgelength))
+        (+ (* (car index) a/2) (* (cadr index) edgelength))))
   
 (define (make-3d-vector a b c initial)
   (build-vector a (lambda (x) (make-2d-vector b c initial))))
@@ -25,8 +26,41 @@
   (let* ((l (vector-ref vec a))
          (r (vector-ref l b)))
     (vector-set! r c val)))
-(define (do-func xc yc)
-  "hi")
+
+
+(define (drawball x y color)
+  (define colorstring
+    (cond [(= color 0) "RED"]
+          [(= color 1) "BLUE"]
+          [(= color 2) "YELLOW"]
+          [else "BLACK"]))
+  (define colorbrush (make-object brush% colorstring 'solid))
+  (send dc set-brush colorbrush)
+  (send dc draw-ellipse (+ (- x r) lx) (+ (- y r) ly) 2r 2r))
+(define (in-vicinity? x y index)
+  (define d 2r)
+  (define point (index-to-point index))
+  (define x1 (+ lx (car point)))
+  (define y1 (+ ly (cdr point)))
+  (and (< (abs (- x x1)) d) (< (abs (- y y1)) d)))
+
+
+(define (get-closest x y)
+  (define closest-index (filter (lambda (z) (in-vicinity? x y z)) (gen-all-pos)))
+  (if (null? closest-index) #f (car closest-index)))
+
+(define (recolor-state vec)
+  (map (lambda (x) (begin
+                     (define col (3d-vector-ref vec (car x) (cadr x) (caddr x)))
+                     (define point (index-to-point x))
+                     (drawball (car point) (cdr point) col)))
+       (gen-all-pos)))
+
+(define (line x1 y1 x2 y2)
+  (send dc draw-line (+ lx x1) (+ ly y1) (+ lx x2) (+ lx y2)))
+(define (rect a b c d)
+  (send dc draw-rectangle (+ lx a) (+ ly b) c d))
+
 ;;---------------------------------------------------------------------------------------------------
 ;;---------------------------------------------------------------------------------------------------
 (define my-canvas%
@@ -41,16 +75,19 @@
           (begin
             (set! xc (send event get-x))
             (set! yc (send event get-y))
-            (do-func xc yc))
+            (get-closest xc yc))
           #f))))
 ;;---------------------------------------------------------------------------------------------------
 ;;---------------------------------------------------------------------------------------------------
 (define a 200)
 (define r 10)
 (define 2r (* 2 r))
+(define a/2 (/ a 2))
 (define 2a (* 2 a))
 (define 3a (* 3 a))
 (define 3a/2 (/ 3a 2))
+(define lx (- 300 a))
+(define ly (- 300 a))
 (define frame (new frame% [label "Drawing Example"]
                    [width 3a]
                    [height 3a]))
@@ -72,30 +109,18 @@
 (define (draw-face dc)
   (send dc set-pen red-pen)
   (send dc set-brush no-brush)
-  (send dc draw-rectangle a a a a)
-  (send dc draw-rectangle (/ a 2) (/ a 2) 2a 2a)
-  (send dc draw-rectangle 0 0 3a 3a)
-  (send dc draw-line 0 3a/2 a 3a/2)
-  (send dc draw-line 3a/2 0 3a/2 a)
-  (send dc draw-line 2a 3a/2 3a 3a/2)
-  (send dc draw-line 3a/2 2a 3a/2 3a)
+  (rect a a a a)
+  (rect a/2 a/2 2a 2a)
+  (rect 0 0 3a 3a)
+  (line 0 3a/2 a 3a/2)
+  (line 3a/2 0 3a/2 a)
+  (line 2a 3a/2 3a 3a/2)
+  (line 3a/2 2a 3a/2 3a)
   (send dc set-pen no-pen)
   (send dc set-brush no-brush)
-  ;(send dc draw-ellipse (- a r) (- a r) 2r 2r)
-  ;(send dc set-brush yellow-brush)
-  ;(define bg (make-object bitmap% "images/board.jpg"))
-  ;(send dc draw-bitmap bg 0 0)
-  ;(send dc draw-ellipse (- a r) (- a r) 2r 2r)
-  (define bm (make-object bitmap% 30 30))
-  (send bm load-file "images/blue-30.png" 'png #f)
-  (define yeloow (make-object color% "yellow"))
-  (send dc set-background yeloow)
-  (send dc set-brush white-brush)
-  
-  (send dc draw-rectangle (/ (- a 30) 2) (/ (- a 30) 2) 30 30)
-  
-  
-  (send dc draw-bitmap bm a a))
+  (define vec (make-3d-vector 3 3 3 0))
+  (drawball a a 2)
+  (recolor-state vec))
 ; Show the frame
 (send frame show #t)
 ; Wait a second to let the window get ready
