@@ -4,10 +4,11 @@
 ;(require 2htdp/universe)
 (require racket/math)
 ;(require rsound)
-;;---------------------------------------------------------------------------------------------------
-;;---------------------------------------------------------------------------------------------------
-;;utility functions
 
+
+;;---------------------------------------------------------------------------------------------------
+;;---------------------------------------------------------------------------------------------------
+;;valid moves
 
 (define phase 0)
 (define wait 0)
@@ -25,9 +26,9 @@
   )
 
 (define (checkS bx v)
- (let ((v1 (getRV bx))
-       (v2 (getCV bx)))
-   (if (or (equal? v1 (list v v v)) (equal? v2 (list v v v))) #t #f))
+  (let ((v1 (getRV bx))
+        (v2 (getCV bx)))
+    (if (or (equal? v1 (list v v v)) (equal? v2 (list v v v))) #t #f))
   )
 (define (neigh bx v)
   (cond [(= (car bx) (car v)) (= 1 (+ (abs (- (cadr bx) (cadr v))) (abs (- (caddr bx) (caddr v)))))]
@@ -43,56 +44,60 @@
 (define pP (list 0 0 0))
 
 (define (moveIt bx)
- (cond [(= wait 0) (cond [(= cP 1) (let ((clr (3vf state bx)))
-                                     (if (= clr 1) (begin (set! pP bx) (set! wait 1)) (displayln "Not Correct Rectangle")))]
-                         [(= cP 2) (let ((clr (3vf state bx)))
-                                     (if (= clr 2) (begin (set! pP bx) (set! wait 1)) (displayln "Not Correct Rectangle")))])]
-       [(= wait 1) (cond [(= cP 1) (let ((clr (3vf state bx)))
-                                     (if (and (= clr 0) (neigh pP bx))
-                                         (begin (3vs state pP 0) (3vs state bx 1)
-                                                (if (checkS bx 1) (set! wait 2) (begin (set! wait 0) (set! cP 2)))) (displayln "Not a Valid Move")))]
-                         [(= cP 2) (let ((clr (3vf state bx)))
-                                     (if (and (= clr 0) (neigh pP bx))
-                                         (begin (3vs state pP 0) (3vs state bx 2)
-                                                (if (checkS bx 2) (set! wait 2) (begin (set! wait 0) (set! cP 1)))) (displayln "Not a Valid Move")))])]
-       [(= wait 2) (cond [(= cP 1) (let ((clr (3vf state bx)))
-                                     (if (and (= clr 2) (not (checkS bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
-                                                    (displayln "Not Correct Rectangle")))]
-                         [(= cP 2) (let ((clr (3vf state bx)))
-                                     (if (and (= clr 1) (not (checkS bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0))
-                                                    (displayln "Not Correct Rectangle")))])])
+  (cond [(= wait 0) (cond [(= cP 1) (let ((clr (3vf state bx)))
+                                      (if (= clr 1) (begin (set! pP bx) (set! wait 1)) (displayln "Not Correct Rectangle")))]
+                          [(= cP 2) (let ((clr (3vf state bx)))
+                                      (if (= clr 2) (begin (set! pP bx) (set! wait 1)) (displayln "Not Correct Rectangle")))])]
+        [(= wait 1) (cond [(= cP 1) (let ((clr (3vf state bx)))
+                                      (if (and (= clr 0) (neigh pP bx))
+                                          (begin (3vs state pP 0) (3vs state bx 1)
+                                                 (if (checkS bx 1) (set! wait 2) (begin (set! wait 0) (set! cP 2)))) (displayln "Not a Valid Move")))]
+                          [(= cP 2) (let ((clr (3vf state bx)))
+                                      (if (and (= clr 0) (neigh pP bx))
+                                          (begin (3vs state pP 0) (3vs state bx 2)
+                                                 (if (checkS bx 2) (set! wait 2) (begin (set! wait 0) (set! cP 1)))) (displayln "Not a Valid Move")))])]
+        [(= wait 2) (cond [(= cP 1) (let ((clr (3vf state bx)))
+                                      (if (and (= clr 2) (not (checkS bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
+                                          (displayln "Not Correct Rectangle")))]
+                          [(= cP 2) (let ((clr (3vf state bx)))
+                                      (if (and (= clr 1) (not (checkS bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0))
+                                          (displayln "Not Correct Rectangle")))])])
   )
 
 (define (putIt bx)
   (cond [(= wait 0) (cond [(= cP 1) (let ((clr (3vf state bx)))
                                       (if (= clr 0) (begin (3vs state bx 1)
-                                                      (if (checkS bx 1) (set! wait 1) (set! cP 2)))
-                                                    (displayln "Not Correct Rectangle")))]
+                                                           (if (checkS bx 1) (set! wait 1) (set! cP 2)))
+                                          (displayln "Not Correct Rectangle")))]
                           [(= cP 2) (let ((clr (3vf state bx)))
                                       (if (= clr 0) (begin (3vs state bx 2)
-                                                      (if (checkS bx 2) (set! wait 1)
-                                                          (begin (set! cP 1) (set! cnt (+ 1 cnt)) (if (= cnt 9) (set! phase 1) #t)))
-                                                      )
-                                                    (displayln "Not Correct Rectangle")))])]
+                                                           (if (checkS bx 2) (set! wait 1)
+                                                               (begin (set! cP 1) (set! cnt (+ 1 cnt)) (if (= cnt 9) (set! phase 1) #t)))
+                                                           )
+                                          (displayln "Not Correct Rectangle")))])]
         [(= wait 1) (cond [(= cP 1) (let ((clr (3vf state bx)))
                                       (if (and (= clr 2) (not (checkS bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
-                                                    (displayln "Not Correct Rectangle")))]
+                                          (displayln "Not Correct Rectangle")))]
                           [(= cP 2) (let ((clr (3vf state bx)))
                                       (if (and (= clr 1) (not (checkS bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0)
-                                                                                 (set! cnt (+ 1 cnt))
-                                                                                 (if (= cnt 9) (set! phase 1) #t))
-                                                    (displayln "Not Correct Rectangle")))])])
+                                                                                     (set! cnt (+ 1 cnt))
+                                                                                     (if (= cnt 9) (set! phase 1) #t))
+                                          (displayln "Not Correct Rectangle")))])])
   )
 
- 
+
+;;---------------------------------------------------------------------------------------------------
+;;---------------------------------------------------------------------------------------------------
+;;utility functions
+
 (define (gen-all-pos)
   (define thepos '(0 1 2))
   (filter (lambda (x) (not (and (equal? (cadr x) 1) (equal? (caddr x) 1)))) (cartesian-product thepos thepos thepos)))
 
 (define (index-to-point index)  ;;index is list of indices
-  (define edgelength (/ (* (- 3 (car index)) a) 2))
-  (cons (+ (* (car index) a/2) (* (caddr index) edgelength) cX (* -1 3a/2))
-        (+ (* (car index) a/2) (* (cadr index) edgelength) cY (* -1 3a/2))))
+	  (define edgelength (/ (* (- 3 (car index)) a) 2))
+	  (cons (+ (* (car index) a/2) (* (caddr index) edgelength))
+	        (+ (* (car index) a/2) (* (cadr index) edgelength))))
   
 (define (make-3d-vector a b c initial)
   (build-vector a (lambda (x) (make-2d-vector b c initial))))
@@ -151,33 +156,36 @@
 
 ;;---------------------------------------------------------------------------------------------------
 ;;---------------------------------------------------------------------------------------------------
+
 (define my-canvas%
   (class canvas%
-   ; Define overriding method to handle mouse events
+    ; Define overriding method to handle mouse events
     (super-new)
     (define/override (on-event event)
       (if (send event button-down? 'left)
           (let* ((xc (send event get-x))
-                (yc (send event get-y))
-                (box (get-closest xc yc)))
-                (if (list? box) (begin (st-trans box) (recolor-state state)) (displayln "Click on rectangle region only")))
+                 (yc (send event get-y))
+                 (box (get-closest xc yc)))
+            (if (list? box) (begin (st-trans box) (recolor-state state)) (displayln "Click on rectangle region only")))
           (displayln "Click on Left")))))
 ;;---------------------------------------------------------------------------------------------------
 ;;---------------------------------------------------------------------------------------------------
-(define a 100)
-(define cX 100)
-(define cY 120)
-(define r 10)
+;;constants
+(define a 150)
+(define r (/ a 10))
 (define 2r (* 2 r))
 (define a/2 (/ a 2))
 (define 2a (* 2 a))
 (define 3a (* 3 a))
 (define 3a/2 (/ 3a 2))
-(define lx (- 300 a))
-(define ly (- 300 a))
+(define windowsize (* 5 a))
+(define lx (/ (- windowsize 3a) 2))
+(define ly (/ (- windowsize 3a) 2))
 (define frame (new frame% [label "Drawing Example"]
-                   [width 600]
-                   [height 600]))
+                   [width windowsize]
+                   [height windowsize]))
+;;---------------------------------------------------------------------------------------------------
+;;---------------------------------------------------------------------------------------------------
 ; Make the drawing area
 (define canvas (new my-canvas% [parent frame]))
 ; Get the canvas's drawing context
@@ -186,31 +194,27 @@
 ; Make some pens and brushes
 (define no-pen (make-object pen% "BLACK" 1 'transparent))
 (define no-brush (make-object brush% "BLACK" 'transparent))
-(define blue-brush (make-object brush% "BLUE" 'solid))
-(define yellow-brush (make-object brush% "YELLOW" 'solid))
-(define white-brush (make-object brush% "WHITE" 'solid))
+;(define blue-brush (make-object brush% "BLUE" 'solid))
+;(define yellow-brush (make-object brush% "YELLOW" 'solid))
+;(define white-brush (make-object brush% "WHITE" 'solid))
 (define red-pen (make-object pen% "RED" 2 'solid))
-(define yellow-pen (make-object pen% "YELLOW" 2 'solid))
+;(define yellow-pen (make-object pen% "YELLOW" 2 'solid))
 
-; Define a procedure to draw a face
-(define (draw-face dc)
+(define (draw-grid dc)
   (send dc set-pen red-pen)
   (send dc set-brush no-brush)
-
-  (rect (- cX (/ a 2)) (- cY (/ a 2)) a a)
-  (rect (- cX (/ 2a 2)) (- cY (/ 2a 2)) 2a 2a)
-  (rect (- cX (/ 3a 2)) (- cY (/ 3a 2)) 3a 3a)
-  (line (- cX (/ 3a 2)) cY (- cX (/ a 2)) cY)
-  (line (+ cX (/ 3a 2)) cY (+ cX (/ a 2)) cY)
-  (line cX (- cY (/ 3a 2)) cX (- cY (/ a 2)))
-  (line cX (+ cY (/ 3a 2)) cX (+ cY (/ a 2)))
+  (rect a a a a)
+  (rect a/2 a/2 2a 2a)
+  (rect 0 0 3a 3a)
+  (line 0 3a/2 a 3a/2)
+  (line 3a/2 0 3a/2 a)
+  (line 2a 3a/2 3a 3a/2)
+  (line 3a/2 2a 3a/2 3a)
   (send dc set-pen no-pen)
   (send dc set-brush no-brush)
-  (recolor-state state))
+  (recolor-state state)
+  'ok)
 
-; Show the frame
 (send frame show #t)
-; Wait a second to let the window get ready
 (sleep/yield 1)
-; Draw the face
-(draw-face dc)
+(draw-grid dc)
