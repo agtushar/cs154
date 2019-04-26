@@ -9,7 +9,6 @@
 ;;utility functions
 
 
-(define state (make-3d-vector 3 3 3 0))
 (define phase 0)
 (define wait 0)
 (define cP 1)
@@ -71,8 +70,9 @@
                                                     (displayln "Not Correct Rectangle")))]
                           [(= cP 2) (let ((clr (3vf state bx)))
                                       (if (= clr 0) (begin (3vs state bx 2)
-                                                      (if (checkS bx 2) (set! wait 1) (begin (set! cP 1) (set! cnt (+ 1 cnt))))
-                                                      (if (= cnt 9) (set! phase 1) #t))
+                                                      (if (checkS bx 2) (set! wait 1)
+                                                          (begin (set! cP 1) (set! cnt (+ 1 cnt)) (if (= cnt 9) (set! phase 1) #t)))
+                                                      )
                                                     (displayln "Not Correct Rectangle")))])]
         [(= wait 1) (cond [(= cP 1) (let ((clr (3vf state bx)))
                                       (if (and (= clr 2) (not (checkS bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
@@ -80,7 +80,7 @@
                           [(= cP 2) (let ((clr (3vf state bx)))
                                       (if (and (= clr 1) (not (checkS bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0)
                                                                                  (set! cnt (+ 1 cnt))
-                                                                                 ((if (= cnt 9) (set! phase 1) #t)))
+                                                                                 (if (= cnt 9) (set! phase 1) #t))
                                                     (displayln "Not Correct Rectangle")))])])
   )
 
@@ -91,8 +91,8 @@
 
 (define (index-to-point index)  ;;index is list of indices
   (define edgelength (/ (* (- 3 (car index)) a) 2))
-  (cons (+ (* (car index) a/2) (* (caddr index) edgelength))
-        (+ (* (car index) a/2) (* (cadr index) edgelength))))
+  (cons (+ (* (car index) a/2) (* (caddr index) edgelength) cX (* -1 3a/2))
+        (+ (* (car index) a/2) (* (cadr index) edgelength) cY (* -1 3a/2))))
   
 (define (make-3d-vector a b c initial)
   (build-vector a (lambda (x) (make-2d-vector b c initial))))
@@ -114,6 +114,7 @@
 (define (3vs vec l val)
   (3d-vector-set! vec (car l) (cadr l) (caddr l) val))
 
+(define state (make-3d-vector 3 3 3 0))
 
 (define (drawball x y color)
   (define colorstring
@@ -156,16 +157,16 @@
     (super-new)
     (define/override (on-event event)
       (if (send event button-down? 'left)
-          (let ((xc (send event get-x))
+          (let* ((xc (send event get-x))
                 (yc (send event get-y))
                 (box (get-closest xc yc)))
-                (if (list? box) (st-trans box) (displayln "Click on rectangle region only")))
+                (if (list? box) (begin (st-trans box) (recolor-state state)) (displayln "Click on rectangle region only")))
           (displayln "Click on Left")))))
 ;;---------------------------------------------------------------------------------------------------
 ;;---------------------------------------------------------------------------------------------------
 (define a 100)
-(define cX 250)
-(define cY 250)
+(define cX 100)
+(define cY 120)
 (define r 10)
 (define 2r (* 2 r))
 (define a/2 (/ a 2))
@@ -205,9 +206,7 @@
   (line cX (+ cY (/ 3a 2)) cX (+ cY (/ a 2)))
   (send dc set-pen no-pen)
   (send dc set-brush no-brush)
-
-  (drawball a a 2)
-  (recolor-state vec))
+  (recolor-state state))
 
 ; Show the frame
 (send frame show #t)
