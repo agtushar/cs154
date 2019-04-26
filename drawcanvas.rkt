@@ -89,6 +89,10 @@
   (define thepos '(0 1 2))
   (filter (lambda (x) (not (and (equal? (cadr x) 1) (equal? (caddr x) 1)))) (cartesian-product thepos thepos thepos)))
 
+(define (index-to-point index)  ;;index is list of indices
+  (define edgelength (/ (* (- 3 (car index)) a) 2))
+  (cons (+ (* (car index) a/2) (* (caddr index) edgelength))
+        (+ (* (car index) a/2) (* (cadr index) edgelength))))
   
 (define (make-3d-vector a b c initial)
   (build-vector a (lambda (x) (make-2d-vector b c initial))))
@@ -110,6 +114,42 @@
 (define (3vs vec l val)
   (3d-vector-set! vec (car l) (cadr l) (caddr l) val))
 
+
+(define (drawball x y color)
+  (define colorstring
+    (cond [(= color 0) "RED"]
+          [(= color 1) "BLUE"]
+          [(= color 2) "YELLOW"]
+          [else "BLACK"]))
+  (define colorbrush (make-object brush% colorstring 'solid))
+  (send dc set-brush colorbrush)
+  (send dc draw-ellipse (+ (- x r) lx) (+ (- y r) ly) 2r 2r))
+(define (in-vicinity? x y index)
+  (define d 2r)
+  (define point (index-to-point index))
+  (define x1 (+ lx (car point)))
+  (define y1 (+ ly (cdr point)))
+  (and (< (abs (- x x1)) d) (< (abs (- y y1)) d)))
+
+
+(define (get-closest x y)
+  (define closest-index (filter (lambda (z) (in-vicinity? x y z)) (gen-all-pos)))
+  (if (null? closest-index) #f (car closest-index)))
+
+(define (recolor-state vec)
+  (map (lambda (x) (begin
+                     (define col (3d-vector-ref vec (car x) (cadr x) (caddr x)))
+                     (define point (index-to-point x))
+                     (drawball (car point) (cdr point) col)))
+       (gen-all-pos)))
+
+(define (line x1 y1 x2 y2)
+  (send dc draw-line (+ lx x1) (+ ly y1) (+ lx x2) (+ lx y2)))
+(define (rect a b c d)
+  (send dc draw-rectangle (+ lx a) (+ ly b) c d))
+
+;;---------------------------------------------------------------------------------------------------
+;;---------------------------------------------------------------------------------------------------
 (define my-canvas%
   (class canvas%
    ; Define overriding method to handle mouse events
@@ -118,7 +158,7 @@
       (if (send event button-down? 'left)
           (let ((xc (send event get-x))
                 (yc (send event get-y))
-                (box (tFun xc yc)))
+                (box (get-closest xc yc)))
                 (if (list? box) (st-trans box) (displayln "Click on rectangle region only")))
           (displayln "Click on Left")))))
 ;;---------------------------------------------------------------------------------------------------
@@ -128,9 +168,12 @@
 (define cY 250)
 (define r 10)
 (define 2r (* 2 r))
+(define a/2 (/ a 2))
 (define 2a (* 2 a))
 (define 3a (* 3 a))
 (define 3a/2 (/ 3a 2))
+(define lx (- 300 a))
+(define ly (- 300 a))
 (define frame (new frame% [label "Drawing Example"]
                    [width 600]
                    [height 600]))
@@ -152,15 +195,20 @@
 (define (draw-face dc)
   (send dc set-pen red-pen)
   (send dc set-brush no-brush)
-  (send dc draw-rectangle (- cX (/ a 2)) (- cY (/ a 2)) a a)
-  (send dc draw-rectangle (- cX (/ 2a 2)) (- cY (/ 2a 2)) 2a 2a)
-  (send dc draw-rectangle (- cX (/ 3a 2)) (- cY (/ 3a 2)) 3a 3a)
-  (send dc draw-line (- cX (/ 3a 2)) cY (- cX (/ a 2)) cY)
-  (send dc draw-line (+ cX (/ 3a 2)) cY (+ cX (/ a 2)) cY)
-  (send dc draw-line cX (- cY (/ 3a 2)) cX (- cY (/ a 2)))
-  (send dc draw-line cX (+ cY (/ 3a 2)) cX (+ cY (/ a 2)))
+
+  (rect (- cX (/ a 2)) (- cY (/ a 2)) a a)
+  (rect (- cX (/ 2a 2)) (- cY (/ 2a 2)) 2a 2a)
+  (rect (- cX (/ 3a 2)) (- cY (/ 3a 2)) 3a 3a)
+  (line (- cX (/ 3a 2)) cY (- cX (/ a 2)) cY)
+  (line (+ cX (/ 3a 2)) cY (+ cX (/ a 2)) cY)
+  (line cX (- cY (/ 3a 2)) cX (- cY (/ a 2)))
+  (line cX (+ cY (/ 3a 2)) cX (+ cY (/ a 2)))
   (send dc set-pen no-pen)
-  (send dc set-brush no-brush))
+  (send dc set-brush no-brush)
+
+  (drawball a a 2)
+  (recolor-state vec))
+
 ; Show the frame
 (send frame show #t)
 ; Wait a second to let the window get ready
