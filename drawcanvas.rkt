@@ -55,13 +55,13 @@
                                          (cond [(= 4 (length nxtMove1)) (begin (moveIt (car nxtMove1)) (moveIt (cdr nxtMove1)) (moveIt nxtMove2))]
                                                [else (moveIt nxtMove1) (moveIt nxtMove2)])) #t))])
   )
-(define frame00 (new frame% [label "9-Men-Morris window"] 
+(define frame00 (new frame% [label "9-Men-Morris window1"] 
                    [width windowsize]
                    [height windowsize]))
-(define frame11 (new frame% [label "9-Men-Morris window"] 
+(define frame11 (new frame% [label "9-Men-Morris window2"] 
                    [width windowsize]
                    [height windowsize]))
-(define frame22 (new frame% [label "9-Men-Morris window"] 
+(define frame22 (new frame% [label "9-Men-Morris window3"] 
                    [width windowsize]
                    [height windowsize]))
 
@@ -84,7 +84,7 @@
           (let* ((xc (send event get-x))
                  (yc (send event get-y))
                  (box (get-closest xc yc)))
-            (if (list? box) (begin (st-trans box) (recolor-state state)) (displayln "Click on rectangle region only")))
+            (if (list? box) (begin (st-trans2 box) (recolor-state state)) (displayln "Click on rectangle region only")))
           (display "")
           ))))
 (define my-canvas2%
@@ -108,7 +108,7 @@
           (let* ((xc (send event get-x))
                  (yc (send event get-y))
                  (box (get-closest xc yc)))
-            (if (list? box) (begin (st-trans2 box) (recolor-state state)) (displayln "Click on rectangle region only")))
+            (if (list? box) (begin (st-trans box) (recolor-state state)) (displayln "Click on rectangle region only")))
           (display "")
           ))))
 
@@ -124,11 +124,11 @@
 (define dc (send canvas1 get-dc))
 (define dc1 (send canvas1 get-dc))
   
-(define canvas2 (new my-canvas1% [parent frame11])) 
+(define canvas2 (new my-canvas2% [parent frame11])) 
 ; Get the canvas's drawing context
 (define dc2 (send canvas2 get-dc))
 
-(define canvas3 (new my-canvas1% [parent frame22])) 
+(define canvas3 (new my-canvas3% [parent frame22])) 
 ; Get the canvas's drawing context
 (define dc3 (send canvas3 get-dc))
 
@@ -184,24 +184,35 @@
                                                 [(= button 2) (set! game-type 2)] 
                                                 [(= button 3) (set! game-type 3)])
                                           (send frame2 show #f)
+                                          ;(send frame00 show #t)
+                                          ;(draw-grid dc1)
                                           (displayln "T")
                                           (cond [(= game-type 1) (begin (send frame00 show #t)
-                                                                        (sleep/yield 1)
-                                                                        (draw-grid dc3)
-                                                                        (set! dc dc3))]
-                                                [(= game-type 2) (begin (send frame11 show #t)
-                                                                        (sleep/yield 1)
-                                                                        (draw-grid dc2)
-                                                                        (set! dc dc2))]
-                                                [else (begin (send frame22 show #t)
-                                                                        (sleep/yield 1)
-                                                                        (draw-grid dc1)
-                                                                        (set! dc dc1))])
+                                                                        (set! dc dc1)
+                                                                        (sleep/yield 0.1)
+                                                                        (displayln "1p")
+                                                                        (displayln (draw-grid dc1))
+                                                                        )]) 
+                                          (cond [(= game-type 2) (begin (send frame11 show #t)
+                                                                        (sleep/yield 0.1)
+                                                                        (set! dc dc2)
+                                                                        (displayln (draw-grid dc2))
+                                                                        ;(displayln (draw-grid dc2))
+                                                                        ;(displayln (draw-grid dc2))
+                                                                        (sleep/yield 2)
+                                                                        )])
+                                          (cond [(= game-type 3) (begin (send frame22 show #t)
+                                                                        (sleep/yield 0.1)
+                                                                        (displayln "3p")
+                                                                        (set! dc dc3)
+                                                                        (displayln (draw-grid dc3))
+                                                                        (displayln "3p1")
+                                                                        )]))
                                           (sleep/yield 1)
                                           ;(displayln "drawn")
                                           ;(draw-grid dc)
-                                          (set! drawn2 1))])
-                                          )]
+                                          (set! drawn2 1)])
+                                          )] 
                 ))
 
 (define (rbox1) (new radio-box%	 
