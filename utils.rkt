@@ -50,6 +50,11 @@
                    (or (= 1 (cadr bx)) (= 1 (caddr bx))))])
   )
 
+(define (all-in-mill st player)
+  (let* ((pl-posit (filter (λ(x) (= player (3vf st x))) allowed-bxs))) (andmap (λ(x) (checkS st x player)) pl-posit))
+  )
+
+
 (define neigh-pairs (filter (λ(x) (neigh (car x) (cdr x))) (lc (cons x y) : x <- all-list y <- all-list)))
 
 (define phase 0)
@@ -65,18 +70,22 @@
                           [(= cP 2) (let ((clr (3vf state bx)))
                                       (if (= clr 2) (begin (set! pP bx) (set! wait 1)) (displayln "Not Correct Rectangle")))])]
         [(= wait 1) (cond [(= cP 1) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 0) (neigh pP bx))
+                                      (cond [(and (= clr 0) (neigh pP bx))
                                           (begin (3vs state pP 0) (3vs state bx 1)
-                                                 (if (checkS state bx 1) (set! wait 2) (begin (set! wait 0) (set! cP 2)))) (displayln "Not a Valid Move")))]
+                                                 (if (checkS state bx 1) (set! wait 2) (begin (set! wait 0) (set! cP 2))))]
+                                            [(= clr 1) (set! pP bx)]
+                                            [else (displayln "Not a Valid Move")]))]
                           [(= cP 2) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 0) (neigh pP bx))
+                                      (cond [(and (= clr 0) (neigh pP bx))
                                           (begin (3vs state pP 0) (3vs state bx 2)
-                                                 (if (checkS state bx 2) (set! wait 2) (begin (set! wait 0) (set! cP 1)))) (displayln "Not a Valid Move")))])]
+                                                 (if (checkS state bx 2) (set! wait 2) (begin (set! wait 0) (set! cP 1))))]
+                                            [(= clr 2) (set! pP bx)]
+                                            [else (displayln "Not a Valid Move")]))])]
         [(= wait 2) (cond [(= cP 1) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 2) (not (checkS state bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
+                                      (if (and (= clr 2) (or (all-in-mill state 2) (not (checkS state bx 2)))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
                                           (displayln "Not Correct Rectangle")))]
                           [(= cP 2) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 1) (not (checkS state bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0))
+                                      (if (and (= clr 1) (or (all-in-mill state 1) (not (checkS state bx 1)))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0))
                                           (displayln "Not Correct Rectangle")))])])
   )
 
@@ -92,10 +101,10 @@
                                                            )
                                           (displayln "Not Correct Rectangle")))])]
         [(= wait 1) (cond [(= cP 1) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 2) (not (checkS state bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
+                                      (if (and (= clr 2) (or (all-in-mill state 2) (not (checkS state bx 2)))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
                                           (displayln "Not Correct Rectangle")))]
                           [(= cP 2) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 1) (not (checkS state bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0)
+                                      (if (and (= clr 1) (or (all-in-mill state 1) (not (checkS state bx 1)))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0)
                                                                                      (set! cnt (+ 1 cnt))
                                                                                      (if (= cnt 9) (set! phase 1) #t))
                                           (displayln "Not Correct Rectangle")))])])
