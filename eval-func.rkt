@@ -45,7 +45,7 @@
   
   (define opened-morris-elements ;;contains list of pos of neigh of same color for each 2 piece row
     (map (lambda (x) (begin
-                          (define emppos (filter (lambda (index) (equal? (3vf vec index) 0)) x))
+                          (define emppos (car (filter (lambda (index) (equal? (3vf vec index) 0)) x)))
                           (define neighpos (filter (lambda (y) (neigh emppos y)) all-pos))
                           (define rem-neigh-pos (foldl (lambda (y i) (remove y i)) neighpos x))
                           (filter (lambda (index) (= (3vf vec index) color)) rem-neigh-pos)))
@@ -107,8 +107,6 @@
 
 (define (blocked? pos vec)
   (define oppcolor (get-opp (3vf vec pos)))
-  (define row (getRV pos))
-  (define col (getCV pos))
   (define neighpos (filter (lambda (x) (neigh pos x)) all-pos))
   (foldl (lambda (x i) (and (= (3vf vec x) oppcolor) i)) #t neighpos))
 

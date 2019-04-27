@@ -57,7 +57,9 @@
           )
     )
   
-  (cond [(= depth 0) (cons (- (eval-phase state 1 phase) (eval-phase state 2 phase)) '())]
+  (cond [(= depth 0) (let* ((v1 (- (eval-phase state 1 phase) (eval-phase state 2 phase)))
+                            (v2 (displayln v1)))
+                       (cons v1 '()))]
         [(= phase 0) (let* ((moves (filter (lambda (x) (let ((clr (3vf state x))) (= clr 0))) allowed-bxs))
                             (vls (map func1 moves)))
                        (cond [(= cP 1) (apply max1 vls)]

@@ -45,7 +45,7 @@
     (if (or (equal? v1 (list v v v)) (equal? v2 (list v v v))) #t #f))
   )
 (define (neigh bx v)
-  (cond [(= (car bx) (car v)) (= 1 (+ (abs (- (cadr bx) (cadr v))) (abs (- (caddr bx) (caddr v)))))]
+  (cond [(equal? (car bx) (car v)) (= 1 (+ (abs (- (cadr bx) (cadr v))) (abs (- (caddr bx) (caddr v)))))]
         [else (and (= (cadr bx) (cadr v)) (= (caddr bx) (caddr v)) (= 1 (abs (- (car bx) (car v))))
                    (or (= 1 (cadr bx)) (= 1 (caddr bx))))])
   )

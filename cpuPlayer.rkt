@@ -13,15 +13,15 @@
 ;;valid moves
 
 (define (st-trans1 bx)
-  (cond [(= phase 0) (begin (putIt bx) (let* ((nxtMoveP (mini-max state 2 2 0 cnt))
+  (cond [(= phase 0) (begin (putIt bx) (recolor-state state) (if (= cP 2) (let* ((nxtMoveP (mini-max state 2 2 0 cnt))
                                              (nxtMove (cdr nxtMoveP)))
-                                         (cond [(pair? nxtMove) (begin (putIt (car nxtMove)) (putIt (cdr nxtMove)))]
-                                               [else (putIt nxtMove)])))]
-        [(= phase 1) (begin (moveIt bx) (let* ((nxtMoveP (mini-max state 2 2 1 cnt))
+                                         (cond [(= 4 (length nxtMove)) (begin (putIt (car nxtMove)) (putIt (cdr nxtMove)))]
+                                               [else (putIt nxtMove)])) #t))]
+        [(= phase 1) (begin (moveIt bx) (recolor-state state) (if (= cP 2) (let* ((nxtMoveP (mini-max state 2 2 1 cnt))
                                              (nxtMove1 (cadr nxtMoveP))
                                              (nxtMove2 (cddr nxtMoveP)))
                                          (cond [(pair? nxtMove1) (begin (moveIt (car nxtMove1)) (moveIt (cdr nxtMove1)) (moveIt nxtMove2))]
-                                               [else (moveIt nxtMove1) (moveIt nxtMove2)])))])
+                                               [else (moveIt nxtMove1) (moveIt nxtMove2)])) #t))])
   )
 
 ;;---------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@
                  (yc (send event get-y))
                  (box (get-closest xc yc)))
             (if (list? box) (begin (st-trans1 box) (sleep/yield 5) (recolor-state state)) (displayln "Click on rectangle region only")))
-          (displayln "Click on Left")))))
+          #t))))
 ;;---------------------------------------------------------------------------------------------------
 ;;---------------------------------------------------------------------------------------------------
 ;;constants
