@@ -33,7 +33,10 @@
     (length twoliners))
 
   (define (no-of-3-pieces) ;;number of 3 pieces configuration
-    (/ (count (lambda (x) (not (null? (list-intersect (car x) (cdr x)))))
+    (/ (count (lambda (x) (let ((com-el (list-intersect (car x) (cdr x))))
+                            (cond [(null? com-el) 0]
+                                  [(= 0 (3vf (car com-el))) 0]
+                                  [else 1])))
                (cartesian-product twoliners twoliners)) 2))
   
   (define (0-rel) 0)
@@ -112,5 +115,7 @@
   (set->list
    (set-intersect (list->set lst1)
                   (list->set lst2))))
-(3vs state '(0 0 0) 1)
-(3vs state '(0 0 0) 1)
+;(3vs state '(0 0 0) 1)
+;(3vs state '(2 2 1) 2)
+;(3vs state '(0 1 0) 1)
+;(3vs state '(0 2 0) 2)
