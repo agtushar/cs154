@@ -17,6 +17,11 @@
 ;;---------------------------------------------------------------------------------------------------
 ;;utility functions
 
+(define (st-trans bx)
+    (cond [(= phase 0) (putIt bx)]
+          [(= phase 1) (moveIt bx)])
+      )
+
 (define (drawball x y color)
   (define colorstring
     (cond [(= color 0) "RED"]
