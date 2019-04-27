@@ -10,6 +10,7 @@
     [(lc expr : var <- drawn-from  qualifier ...) 
      (append* (lc (lc expr :  qualifier ... ) : var <- drawn-from))]))
 
+
 (define all-list (lc (list x y z) : x <- '(0 1 2) y <- '(0 1 2) z <- '(0 1 2)))
 
 (define allowed-bxs (filter (lambda (x) (not (and (= 1 (cadr x)) (= 1 (caddr x)))))
