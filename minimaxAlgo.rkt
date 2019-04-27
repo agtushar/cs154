@@ -3,6 +3,9 @@
 (require "eval-func.rkt")
 (provide (all-defined-out))
 (define (mini-max state cP depth phase cnt alpha beta)
+  (displayln "kabali da")
+  (displayln alpha)
+  (displayln beta)
   (define (func1 cP depth phase cnt bx alph bet)
     (cond [(= cP 1) (begin (define nw-state (make-3d-vector 3 3 3 0))
                            (vec-copy nw-state state)
@@ -59,7 +62,7 @@
                                                                               (set! temp (mini-max nw-state 1 (- depth 1) (if (> cnt 9) 1 0) (+ 1 cnt) ta tb))
                                                                               (set! tb (min tb (car temp)))
                                                                               (3vs nw-state x 1)
-                                                                              (cons (car temp) (cons move x)))) p2b))))
+                                                                              (cons (car temp) (cons move x))))) p2b)))
                                                   (apply min1 vls)))]
                                  [else (cons (car (mini-max nw-state 1 (- depth 1) (if (> cnt 9) 1 0) (+ cnt 1) alph bet)) move)]))]
           )
@@ -73,8 +76,8 @@
                                             (define temp (cons 0 0))
                                             (let* ((moves (filter (lambda (x) (let ((clr (3vf state x))) (= clr 0))) allowed-bxs))
                                                    (vls (map (λ(x) (if (<= tb ta)
-                                                                       (cons -10000000 '())
-                                                                       (begin (set! temp (func1 cP depth phase cnt x tb ta))
+                                                                       (begin (displayln "returning") (displayln tb) (displayln ta) (cons -10000000 '()))
+                                                                       (begin (set! temp (func1 cP depth phase cnt x ta tb))
                                                                               (set! ta (max ta (car temp)))
                                                                               temp))) moves)))
                                               (apply max1 vls)))]
@@ -83,8 +86,8 @@
                                             (define temp (cons 0 0))
                                             (let* ((moves (filter (lambda (x) (let ((clr (3vf state x))) (= clr 0))) allowed-bxs))
                                                    (vls (map (λ(x) (if (<= tb ta)
-                                                                       (cons 10000000 '())
-                                                                       (begin (set! temp (func1 cP depth phase cnt x tb ta))
+                                                                       (begin (displayln "returning") (displayln tb) (displayln ta) (cons 10000000 '()))
+                                                                       (begin (set! temp (func1 cP depth phase cnt x ta tb))
                                                                               (set! tb (min tb (car temp)))
                                                                               temp))) moves)))
                                               (apply min1 vls)))])]
@@ -95,7 +98,7 @@
                                                                       (= 0 (3vf state (cdr x))))) neigh-pairs))
                                             (vls (map (λ(x) (if (<= tb ta)
                                                                        (cons -10000000 '())
-                                                                       (begin (set! temp (func2 cP depth phase cnt x tb ta))
+                                                                       (begin (set! temp (func2 cP depth phase cnt x ta tb))
                                                                               (set! ta (max ta (car temp)))
                                                                               temp))) moves)))
                                        (apply max1 vls)))]
@@ -106,7 +109,7 @@
                                                                       (= 0 (3vf state (cdr x))))) neigh-pairs))
                                             (vls (map (λ(x) (if (<= tb ta)
                                                                        (cons 10000000 '())
-                                                                       (begin (set! temp (func2 cP depth phase cnt x tb ta))
+                                                                       (begin (set! temp (func2 cP depth phase cnt x ta tb))
                                                                               (set! tb (min tb (car temp)))
                                                                               temp))) moves)))
                                        (apply min1 vls)))])])
