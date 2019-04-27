@@ -20,7 +20,7 @@
         [(= phase 1) (begin (moveIt bx) (recolor-state state) (if (= cP 2) (let* ((nxtMoveP (mini-max state 2 2 1 cnt))
                                              (nxtMove1 (cadr nxtMoveP))
                                              (nxtMove2 (cddr nxtMoveP)))
-                                         (cond [(pair? nxtMove1) (begin (moveIt (car nxtMove1)) (moveIt (cdr nxtMove1)) (moveIt nxtMove2))]
+                                         (cond [(= 4 (length nxtMove1)) (begin (moveIt (car nxtMove1)) (moveIt (cdr nxtMove1)) (moveIt nxtMove2))]
                                                [else (moveIt nxtMove1) (moveIt nxtMove2)])) #t))])
   )
 
