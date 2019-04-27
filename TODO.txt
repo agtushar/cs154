@@ -1,0 +1,1 @@
+for checkS pass state as argument
