@@ -67,16 +67,19 @@
 (define windowsize (* 5 a))
 (define lx (/ (- windowsize 3a) 2))
 (define ly (/ (- windowsize 3a) 2))
-(define frame (new frame% [label "Drawing Example"]
+(define frame (new frame% [label "9-Men-Morris window"] 
                    [width windowsize]
                    [height windowsize]))
-;;---------------------------------------------------------------------------------------------------
-;;---------------------------------------------------------------------------------------------------
 
-(define (st-trans bx)
-  (cond [(= phase 0) (putIt bx)]
-        [(= phase 1) (moveIt bx)])
-  )
+(define frame1 (new frame% [label "Choice window1"] 
+                   [width 300]
+                   [height 200]))
+
+(define frame2 (new frame% [label "Choice window2"] 
+                   [width 300]
+                   [height 200]))
+;;---------------------------------------------------------------------------------------------------
+;;---------------------------------------------------------------------------------------------------
 
 (define my-canvas%
   (class canvas%
@@ -88,7 +91,8 @@
                  (yc (send event get-y))
                  (box (get-closest xc yc)))
             (if (list? box) (begin (st-trans box) (recolor-state state)) (displayln "Click on rectangle region only")))
-          (displayln "Click on Left")))))
+          (display "")
+          ))))
 ;;---------------------------------------------------------------------------------------------------
 ;;---------------------------------------------------------------------------------------------------
 ;;constants
@@ -96,7 +100,7 @@
 ;;---------------------------------------------------------------------------------------------------
 ;;---------------------------------------------------------------------------------------------------
 ; Make the drawing area
-(define canvas (new my-canvas% [parent frame]))
+(define canvas (new my-canvas% [parent frame])) 
 ; Get the canvas's drawing context
 (define dc (send canvas get-dc))
   
@@ -124,6 +128,76 @@
   (recolor-state state)
   'ok)
 
-(send frame show #t)
-(sleep/yield 1)
-(draw-grid dc)
+(define game-type 0)
+(define drawn1 0)
+(define drawn2 0)
+(send frame1 show #t)
+
+(define myfont (make-object font% 15 'decorative
+            'slant))
+
+;(define font1
+;  (new font%
+;    [style 'slant]   
+;               ))
+(define (rbox2) (begin
+                  (send frame1 show #t)
+                  (new radio-box%	 
+   	 	[label "How do you want to play?"]	 
+   	 	[choices (list "No choice" "1 player" "2 player")]	 
+   	 	[parent frame1]
+                [font myfont] 
+                [min-width 100]
+                [min-height 100]
+   	 	[callback (lambda (b e) (cond [(= drawn2 0) (begin
+                                          (define button (send b get-selection))
+                                          (displayln "Disco") 
+                                          (cond [(= button 1) (set! game-type 1)] 
+                                                [(= button 2) (set! game-type 2)])
+                                          (send frame2 show #f)
+                                          (send frame show #t)
+                                          (sleep/yield 1)
+                                          ;(displayln "T")
+                                          (draw-grid dc)
+                                          (sleep/yield 0.1)
+                                          ;(displayln "drawn")
+                                          ;(draw-grid dc)
+                                          (set! drawn2 1))])
+                                          )]
+                )))
+
+(define (rbox1) (new radio-box%	 
+   	 	[label "Which game?"]	 
+   	 	[choices (list "No choice" "Tic-Tac-Toe" "9-Men-Morris")]	 
+   	 	[parent frame1]
+                [font myfont] 
+                [min-width 100]
+                [min-height 100]
+   	 	[callback (lambda (b e) (cond [(= drawn1 0) (begin
+                                          (define button (send b get-selection))
+                                          ;(displayln (send b get-font)) 
+                                          (cond [(= button 1) (set! game-type 1)] 
+                                                [(= button 2) (set! game-type 2)])
+                                          (send frame1 show #f)
+                                          (send frame2 show #t)
+                                          ;(rbox2)
+                                          ;(sleep/yield 1)
+                                          ;(displayln "T")
+                                          ;(draw-grid dc)
+                                          (sleep/yield 0.1)
+                                          (rbox2)
+                                          (sleep/yield 1)
+                                          ;(displayln "drawn")
+                                          ;(draw-grid dc)
+                                          (set! drawn1 1)
+                                          )])
+                                          )]
+                ))	 
+;(send an-area-container delete-child child)
+;(send frame1 show #t)
+(rbox1)
+(displayln "Outside")
+;(sleep/yield 5)
+;(send frame1 show #f)
+;(send frame show #t)
+;(draw-grid dc)
