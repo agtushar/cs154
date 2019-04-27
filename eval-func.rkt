@@ -3,7 +3,7 @@
 
 (define (eval-phase vec color phase)
 
-  (define pos (filter (lambda (x) (equal? (3vf vec x) color)) (gen-all-pos)))
+  (define pos (filter (lambda (x) (equal? (3vf vec x) color)) all-pos))
 
   (define (morris? row)
       (foldl (lambda (index i) (and (= color (3vf vec index)) i)) #t row))
@@ -12,10 +12,11 @@
   
   (define (no-of-morris)  ;;has number of closed morris
     (length morris))
+
+  (define oppcolor (get-opp color))
+  (define opp-pos (filter (lambda (x) (equal? (3vf vec x) oppcolor)) all-pos)) ;;opp-pieces-pos
   
   (define (blocked-opp-pieces) ;;number of blocked opp pieces
-    (define oppcolor (get-opp color))
-    (define opp-pos (filter (lambda (x) (equal? (3vf vec x) oppcolor)) (gen-all-pos)))
     (length (filter (lambda (x) (blocked? x vec)) opp-pos)))
 
   (define (twopiece? row)
@@ -44,7 +45,7 @@
   (define opened-morris-elements ;;contains list of pos of neigh of same color for each 2 piece row
     (map (lambda (x) (begin
                           (define emppos (filter (lambda (index) (equal? (3vf vec index) 0)) x))
-                          (define neighpos (filter (lambda (y) (neigh emppos y)) (gen-all-pos)))
+                          (define neighpos (filter (lambda (y) (neigh emppos y)) all-pos))
                           (define rem-neigh-pos (foldl (lambda (y i) (remove y i)) neighpos x))
                           (filter (lambda (index) (= (3vf vec index) color)) rem-neigh-pos)))
          twoliners))
@@ -57,7 +58,7 @@
                       (length (foldl (lambda (y i) (append (list-intersect x y) i)) '() morris)));;check if neigh is in any of the morris
                          opened-morris-elements)))
   (define (win-conf)
-    ...)
+    (if (= opp-pos 2) 1 0))
   
   (define c ;;coefficient list
     (cond ([(= phase 0) '(18 26 1 6 12 7 0)]
@@ -67,7 +68,7 @@
   (define r ;;relation list
     (cond ([(= phase 0) '(closed-morris no-of-morris blocked-opp-pieces no-of-pieces no-of-2-pieces no-of-3-pieces 0-rel)]
            [(= phase 1) '(closed-morris no-of-morris blocked-opp-pieces no-of-pieces opened-morris double-morris win-conf)]
-           [(= phase 2) '(no-of-2-pieces no-of-3-pieces 0-rel win-conf 0-rel 0-rel 0-rel)])))
+           [(= phase 2) '(no-of-2-pieces no-of-3-pieces closed-morris win-conf 0-rel 0-rel 0-rel)])))
   (foldr (lambda (x i) (+ i (* (list-ref c i) ((list-ref r i))))) 0 (build-list 7 (lambda (x) x))))
     
     
@@ -107,7 +108,7 @@
   (define oppcolor (get-opp (3vf vec pos)))
   (define row (getRV pos))
   (define col (getCV pos))
-  (define neighpos (filter (lambda (x) (neigh pos x)) (gen-all-pos)))
+  (define neighpos (filter (lambda (x) (neigh pos x)) all-pos))
   (foldl (lambda (x i) (and (= (3vf vec x) oppcolor) i)) #t neighpos))
 
 (define (list-intersect lst1 lst2)
