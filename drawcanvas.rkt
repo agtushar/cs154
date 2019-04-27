@@ -27,11 +27,11 @@
         [(= phase 1) (moveIt bx)])
   )
 (define (st-trans2 bx)
-  (cond [(= phase 0) (begin (putIt bx) (recolor-state state) (if (= cP 1) (let* ((nxtMoveP (mini-max state 1 2 0 cnt -10000000 10000000))
+  (cond [(= phase 0) (begin (putIt bx) (recolor-state state) (if (= cP 1) (let* ((nxtMoveP (mini-max state 1 4 0 cnt -10000000 10000000))
                                                                                  (nxtMove (cdr nxtMoveP)))
                                                                             (cond [(= 4 (length nxtMove)) (begin (putIt (car nxtMove)) (putIt (cdr nxtMove)))]
                                                                                   [else (putIt nxtMove)])) #t))]
-        [(= phase 1) (begin (moveIt bx) (recolor-state state) (if (= cP 1) (let* ((nxtMoveP (mini-max state 1 2 1 cnt -10000000 10000000))
+        [(= phase 1) (begin (moveIt bx) (recolor-state state) (if (= cP 1) (let* ((nxtMoveP (mini-max state 1 4 1 cnt -10000000 10000000))
                                                                                   (nxtMove1 (cadr nxtMoveP))
                                                                                   (nxtMove2 (cddr nxtMoveP)))
                                                                              (cond [(= 4 (length nxtMove1)) (begin (moveIt (car nxtMove1)) (moveIt (cdr nxtMove1)) (moveIt nxtMove2))]
@@ -39,11 +39,11 @@
   )
 
 (define (st-trans1 bx)
-  (cond [(= phase 0) (begin (putIt bx) (recolor-state state) (if (= cP 2) (let* ((nxtMoveP (mini-max state 2 2 0 cnt -10000000 10000000))
+  (cond [(= phase 0) (begin (putIt bx) (recolor-state state) (if (= cP 2) (let* ((nxtMoveP (mini-max state 2 4 0 cnt -10000000 10000000))
                                                                                  (nxtMove (cdr nxtMoveP)))
                                                                             (cond [(= 4 (length nxtMove)) (begin (putIt (car nxtMove)) (putIt (cdr nxtMove)))]
                                                                                   [else (putIt nxtMove)])) #t))]
-        [(= phase 1) (begin (moveIt bx) (recolor-state state) (if (= cP 2) (let* ((nxtMoveP (mini-max state 2 2 1 cnt -10000000 10000000))
+        [(= phase 1) (begin (moveIt bx) (recolor-state state) (if (= cP 2) (let* ((nxtMoveP (mini-max state 2 4 1 cnt -10000000 10000000))
                                                                                   (nxtMove1 (cadr nxtMoveP))
                                                                                   (nxtMove2 (cddr nxtMoveP)))
                                                                              (cond [(= 4 (length nxtMove1)) (begin (moveIt (car nxtMove1)) (moveIt (cdr nxtMove1)) (moveIt nxtMove2))]
@@ -171,15 +171,15 @@
                                                                          [(= button 3) (set! game-type 3)])
                                                                    (send frame2 show #f)
                                                                    (cond [(= game-type 1) (begin (send frame00 show #t)
-                                                                                                 (sleep/yield 0.1)
+                                                                                                 (sleep/yield 0.5)
                                                                                                  (set! dc dc1)
                                                                                                  (draw-grid dc1))]) 
                                                                    (cond [(= game-type 2) (begin (send frame11 show #t)
-                                                                                                 (sleep/yield 0.1)
+                                                                                                 (sleep/yield 0.5)
                                                                                                  (set! dc dc2)
                                                                                                  (draw-grid dc2))])
                                                                    (cond [(= game-type 3) (begin (send frame22 show #t)
-                                                                                                 (sleep/yield 0.1)
+                                                                                                 (sleep/yield 0.5)
                                                                                                  (set! dc dc3)
                                                                                                  (draw-grid dc3))]))
                                                                  (set! drawn2 1)]))]))
