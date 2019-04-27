@@ -1,1 +1,2 @@
-for checkS pass state as argument
+1.for checkS pass state as argument
+2.change (gen-all-pos) to gen-all-pos so that it doesn't get evaluated everytime.
