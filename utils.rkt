@@ -1,19 +1,47 @@
 #lang racket
 (provide (all-defined-out))
 
-(define (getRV bx)
-  (cond [(= 1 (cadr bx)) (map (lambda (x) (3vf state (list x (cadr bx) (caddr bx)))) (list 0 1 2))]
-        [else (map (lambda (x) (3vf state (list (car bx) (cadr bx) x))) (list 0 1 2))])
+(define-syntax lc
+  (syntax-rules (: <- @)
+    [(lc expr : var <- drawn-from) (map (lambda (var) expr) drawn-from)]
+    [(lc expr : @ guard) (if guard (list expr) `())]
+    [(lc expr : @ guard  qualifier ...) 
+     (append* (lc (lc expr : qualifier ...) : @ guard))]
+    [(lc expr : var <- drawn-from  qualifier ...) 
+     (append* (lc (lc expr :  qualifier ... ) : var <- drawn-from))]))
+
+(define all-list (lc (list x y z) : x <- '(0 1 2) y <- '(0 1 2) z <- '(0 1 2)))
+
+(define allowed-bxs (filter (lambda (x) (not (and (= 1 (cadr x)) (= 1 (caddr x)))))
+                                        all-list))
+
+(define (max1 a . args)
+  (cond [(null? args) (cons -100000000000000 '())]
+        [else (let ((vl (apply max1 args))) (if (> (car a) (car vl)) a vl))])
   )
 
-(define (getCV bx)
-  (cond [(= 1 (caddr bx)) (map (lambda (x) (3vf state (list x (cadr bx) (caddr bx)))) (list 0 1 2))]
-        [else (map (lambda (x) (3vf state (list (car bx) x (caddr bx)))) (list 0 1 2))])
+(define (min1 a . args)
+  (cond [(null? args) (cons 100000000000000 '())]
+        [else (let ((vl (apply min1 args))) (if (< (car a) (car vl)) a vl))])
   )
 
-(define (checkS bx v)
-  (let ((v1 (getRV bx))
-        (v2 (getCV bx)))
+(define (vec-copy a b)
+  (map (λ(x) (begin (3vs a x (3vf b x)) #t)) all-list)
+  )
+
+(define (getRV st bx)
+  (cond [(= 1 (cadr bx)) (map (lambda (x) (3vf st (list x (cadr bx) (caddr bx)))) (list 0 1 2))]
+        [else (map (lambda (x) (3vf st (list (car bx) (cadr bx) x))) (list 0 1 2))])
+  )
+
+(define (getCV st bx)
+  (cond [(= 1 (caddr bx)) (map (lambda (x) (3vf st (list x (cadr bx) (caddr bx)))) (list 0 1 2))]
+        [else (map (lambda (x) (3vf st (list (car bx) x (caddr bx)))) (list 0 1 2))])
+  )
+
+(define (checkS st bx v)
+  (let ((v1 (getRV st bx))
+        (v2 (getCV st bx)))
     (if (or (equal? v1 (list v v v)) (equal? v2 (list v v v))) #t #f))
   )
 (define (neigh bx v)
@@ -22,15 +50,12 @@
                    (or (= 1 (cadr bx)) (= 1 (caddr bx))))])
   )
 
+(define neigh-pairs (filter (λ(x) (neigh (car x) (cdr x))) (lc (cons x y) : x <- all-list y <- all-list)))
+
 (define phase 0)
 (define wait 0)
 (define cP 1)
 (define cnt 0)
-
-(define (st-trans bx)
-  (cond [(= phase 0) (putIt bx)]
-        [(= phase 1) (moveIt bx)])
-  )
 
 (define pP (list 0 0 0))
 
@@ -42,35 +67,35 @@
         [(= wait 1) (cond [(= cP 1) (let ((clr (3vf state bx)))
                                       (if (and (= clr 0) (neigh pP bx))
                                           (begin (3vs state pP 0) (3vs state bx 1)
-                                                 (if (checkS bx 1) (set! wait 2) (begin (set! wait 0) (set! cP 2)))) (displayln "Not a Valid Move")))]
+                                                 (if (checkS state bx 1) (set! wait 2) (begin (set! wait 0) (set! cP 2)))) (displayln "Not a Valid Move")))]
                           [(= cP 2) (let ((clr (3vf state bx)))
                                       (if (and (= clr 0) (neigh pP bx))
                                           (begin (3vs state pP 0) (3vs state bx 2)
-                                                 (if (checkS bx 2) (set! wait 2) (begin (set! wait 0) (set! cP 1)))) (displayln "Not a Valid Move")))])]
+                                                 (if (checkS state bx 2) (set! wait 2) (begin (set! wait 0) (set! cP 1)))) (displayln "Not a Valid Move")))])]
         [(= wait 2) (cond [(= cP 1) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 2) (not (checkS bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
+                                      (if (and (= clr 2) (not (checkS state bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
                                           (displayln "Not Correct Rectangle")))]
                           [(= cP 2) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 1) (not (checkS bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0))
+                                      (if (and (= clr 1) (not (checkS state bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0))
                                           (displayln "Not Correct Rectangle")))])])
   )
 
 (define (putIt bx)
   (cond [(= wait 0) (cond [(= cP 1) (let ((clr (3vf state bx)))
                                       (if (= clr 0) (begin (3vs state bx 1)
-                                                           (if (checkS bx 1) (set! wait 1) (set! cP 2)))
+                                                           (if (checkS state bx 1) (set! wait 1) (set! cP 2)))
                                           (displayln "Not Correct Rectangle")))]
                           [(= cP 2) (let ((clr (3vf state bx)))
                                       (if (= clr 0) (begin (3vs state bx 2)
-                                                           (if (checkS bx 2) (set! wait 1)
+                                                           (if (checkS state bx 2) (set! wait 1)
                                                                (begin (set! cP 1) (set! cnt (+ 1 cnt)) (if (= cnt 9) (set! phase 1) #t)))
                                                            )
                                           (displayln "Not Correct Rectangle")))])]
         [(= wait 1) (cond [(= cP 1) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 2) (not (checkS bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
+                                      (if (and (= clr 2) (not (checkS state bx 2))) (begin (set! wait 0) (set! cP 2) (3vs state bx 0))
                                           (displayln "Not Correct Rectangle")))]
                           [(= cP 2) (let ((clr (3vf state bx)))
-                                      (if (and (= clr 1) (not (checkS bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0)
+                                      (if (and (= clr 1) (not (checkS state bx 1))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0)
                                                                                      (set! cnt (+ 1 cnt))
                                                                                      (if (= cnt 9) (set! phase 1) #t))
                                           (displayln "Not Correct Rectangle")))])])

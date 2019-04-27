@@ -73,6 +73,11 @@
 ;;---------------------------------------------------------------------------------------------------
 ;;---------------------------------------------------------------------------------------------------
 
+(define (st-trans bx)
+  (cond [(= phase 0) (putIt bx)]
+        [(= phase 1) (moveIt bx)])
+  )
+
 (define my-canvas%
   (class canvas%
     ; Define overriding method to handle mouse events

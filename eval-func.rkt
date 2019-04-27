@@ -1,5 +1,6 @@
 #lang racket
 (require "utils.rkt")
+(provide (all-defined-out))
 
 (define (eval-phase vec color phase)
 
