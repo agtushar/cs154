@@ -130,7 +130,7 @@
   (recolor-state state)
   'ok)
 
-(set! cP 2)
+(stCp 2)
 (3vs state '(0 0 0) 1)
 (send frame show #t)
 (sleep/yield 1)

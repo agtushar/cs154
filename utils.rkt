@@ -63,6 +63,9 @@
 (define cP 1)
 (define cnt 0)
 
+(define (stCp v)
+  (set! cP v))
+
 (define pP (list 0 0 0))
 
 (define (moveIt bx)
