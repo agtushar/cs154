@@ -4,6 +4,8 @@
 (require 2htdp/universe)
 (require racket/math)
 (require rsound)
+ 
+(provide (all-defined-out))
 
 (define (b1 x y)
   (cond [(and (>= x 33) (< x 332) (>= y 33) (< y 232)) (cons #t (list 10 10 300 300))]
@@ -171,18 +173,18 @@
       (send msg1 set-label "Keyboard movement"))
     (super-new)))
 
-(define frame (new frame%                    
+(define frame3 (new frame%                    
                    [label "Credits: 170100082"]
                    [width 1000]
-                   [height 300]))
+                   [height 1000]))
 
-(define msg1 (new message% [parent frame]
+(define msg1 (new message% [parent frame3]
                           [label "Game in progress ..."] 
                           [min-height 40]
                           ;[color "black"]
                           [font (make-object font% 30 'default 'normal 'bold)])) 
 
-(define cv (new my-canvas% [parent frame]
+(define cv (new my-canvas% [parent frame3]
              [paint-callback
               (lambda (canvas dc)
                  (send dc set-background (make-object color% "black"))
@@ -211,8 +213,6 @@
                 ;(send canvas set-canvas-background "yellow")
                 ;(send dc draw-text "Hello World" 50 50)
                 )]))
-
-(send frame show #t)
 
 (define (pos-h a loc i)
   ;(displayln i)
