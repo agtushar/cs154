@@ -65,7 +65,7 @@
                          opened-morris-elements)))
 
   (define (win-conf)
-    (if (= opp-pos 2) 1 0))
+    (if (= (length opp-pos) 2) 1 0))
   
   (define c ;;coefficient list
     (cond [(= phase 0) '(18 26 1 6 12 7 0)]
