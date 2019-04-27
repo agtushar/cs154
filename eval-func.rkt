@@ -3,7 +3,6 @@
 (provide (all-defined-out))
 
 (define (eval-phase vec color phase)
-
   (define pos (filter (lambda (x) (equal? (3vf vec x) color)) all-pos))
 
   (define (morris? row)
@@ -27,12 +26,11 @@
                                             [else 50])))) 0 row) 2))
   
   (define twoliners (filter (lambda (x) (twopiece? x)) all-lines))
-  
   (define (no-of-pieces);;number of pieces
     (length pos))
 
   (define (no-of-2-pieces) ;;number of 2 pieces configuration
-    (count twoliners))
+    (length twoliners))
 
   (define (no-of-3-pieces) ;;number of 3 pieces configuration
     (/ (count (lambda (x) (not (null? (list-intersect (car x) (cdr x)))))
@@ -70,7 +68,7 @@
     (cond [(= phase 0) (list closed-morris no-of-morris blocked-opp-pieces no-of-pieces no-of-2-pieces no-of-3-pieces 0-rel)]
            [(= phase 1) (list closed-morris no-of-morris blocked-opp-pieces no-of-pieces opened-morris double-morris win-conf)]
            [(= phase 2) (list no-of-2-pieces no-of-3-pieces closed-morris win-conf 0-rel 0-rel 0-rel)]))
-  (foldr (lambda (x i) (+ i (* (list-ref c i) ((list-ref r i))))) 0 (build-list 7 (lambda (x) x))))
+  (foldr (lambda (x i) (+ i (* (list-ref c x) ((list-ref r x))))) 0 (build-list 7 (lambda (x) x))))
     
     
   
@@ -114,5 +112,5 @@
   (set->list
    (set-intersect (list->set lst1)
                   (list->set lst2))))
-  
-  
+(3vs state '(0 0 0) 1)
+(3vs state '(0 0 0) 1)
