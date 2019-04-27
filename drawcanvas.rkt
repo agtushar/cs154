@@ -129,6 +129,7 @@
   'ok)
 
 (define game-type 0)
+(define game 'u)
 (define drawn1 0)
 (define drawn2 0)
 (send frame1 show #t)
@@ -140,31 +141,32 @@
 ;  (new font%
 ;    [style 'slant]   
 ;               ))
-(define (rbox2) (begin
-                  (send frame1 show #t)
-                  (new radio-box%	 
+(define (rbox2) (new radio-box%	 
    	 	[label "How do you want to play?"]	 
    	 	[choices (list "No choice" "1 player" "2 player")]	 
-   	 	[parent frame1]
+   	 	[parent frame2]
                 [font myfont] 
                 [min-width 100]
                 [min-height 100]
    	 	[callback (lambda (b e) (cond [(= drawn2 0) (begin
+                                                              (set! drawn2 1)
                                           (define button (send b get-selection))
-                                          (displayln "Disco") 
+                                          ;(displayln "Disco") 
                                           (cond [(= button 1) (set! game-type 1)] 
                                                 [(= button 2) (set! game-type 2)])
+                                          (displayln drawn2)
                                           (send frame2 show #f)
+                                          (displayln drawn2)
                                           (send frame show #t)
                                           (sleep/yield 1)
-                                          ;(displayln "T")
+                                          (displayln "T")
                                           (draw-grid dc)
-                                          (sleep/yield 0.1)
+                                          (sleep/yield 1)
                                           ;(displayln "drawn")
                                           ;(draw-grid dc)
                                           (set! drawn2 1))])
                                           )]
-                )))
+                ))
 
 (define (rbox1) (new radio-box%	 
    	 	[label "Which game?"]	 
@@ -174,15 +176,17 @@
                 [min-width 100]
                 [min-height 100]
    	 	[callback (lambda (b e) (cond [(= drawn1 0) (begin
+                                                              (set! drawn1 1)
                                           (define button (send b get-selection))
                                           ;(displayln (send b get-font)) 
-                                          (cond [(= button 1) (set! game-type 1)] 
-                                                [(= button 2) (set! game-type 2)])
+                                          (cond [(= button 1) (set! game 'ttt)] 
+                                                [(= button 2) (set! game 'nmm)])
                                           (send frame1 show #f)
+                                          (sleep/yield 2)
                                           (send frame2 show #t)
                                           ;(rbox2)
                                           ;(sleep/yield 1)
-                                          ;(displayln "T")
+                                          ;(displayln "1st")
                                           ;(draw-grid dc)
                                           (sleep/yield 0.1)
                                           (rbox2)
