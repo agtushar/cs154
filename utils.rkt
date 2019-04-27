@@ -77,11 +77,11 @@
   )
 
 
-(define (gen-all-pos)
+(define (gen-all-pos-func)
   (define thepos '(0 1 2))
   (filter (lambda (x) (not (and (equal? (cadr x) 1) (equal? (caddr x) 1)))) (cartesian-product thepos thepos thepos)))
 
-  
+(define all-pos (gen-all-pos-func))
 (define (make-3d-vector a b c initial)
   (build-vector a (lambda (x) (make-2d-vector b c initial))))
 (define (make-2d-vector r c initial)

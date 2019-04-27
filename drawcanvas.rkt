@@ -36,7 +36,7 @@
 
 
 (define (get-closest x y)
-  (define closest-index (filter (lambda (z) (in-vicinity? x y z)) (gen-all-pos)))
+  (define closest-index (filter (lambda (z) (in-vicinity? x y z)) all-pos))
   (if (null? closest-index) #f (car closest-index)))
 
 (define (recolor-state vec)
@@ -44,7 +44,7 @@
                      (define col (3d-vector-ref vec (car x) (cadr x) (caddr x)))
                      (define point (index-to-point x))
                      (drawball (car point) (cdr point) col)))
-       (gen-all-pos)))
+       all-pos))
 
 
 (define (index-to-point index)  ;;index is list of indices
