@@ -62,14 +62,14 @@
     (if (= opp-pos 2) 1 0))
   
   (define c ;;coefficient list
-    (cond ([(= phase 0) '(18 26 1 6 12 7 0)]
+    (cond [(= phase 0) '(18 26 1 6 12 7 0)]
            [(= phase 1) '(14 43 10 8 7 42 1086)]
-           [(= phase 2) '(10 1 16 1190 0 0 0)])))
+           [(= phase 2) '(10 1 16 1190 0 0 0)]))
   
   (define r ;;relation list
-    (cond ([(= phase 0) '(closed-morris no-of-morris blocked-opp-pieces no-of-pieces no-of-2-pieces no-of-3-pieces 0-rel)]
-           [(= phase 1) '(closed-morris no-of-morris blocked-opp-pieces no-of-pieces opened-morris double-morris win-conf)]
-           [(= phase 2) '(no-of-2-pieces no-of-3-pieces closed-morris win-conf 0-rel 0-rel 0-rel)])))
+    (cond [(= phase 0) (list closed-morris no-of-morris blocked-opp-pieces no-of-pieces no-of-2-pieces no-of-3-pieces 0-rel)]
+           [(= phase 1) (list closed-morris no-of-morris blocked-opp-pieces no-of-pieces opened-morris double-morris win-conf)]
+           [(= phase 2) (list no-of-2-pieces no-of-3-pieces closed-morris win-conf 0-rel 0-rel 0-rel)]))
   (foldr (lambda (x i) (+ i (* (list-ref c i) ((list-ref r i))))) 0 (build-list 7 (lambda (x) x))))
     
     
@@ -103,7 +103,7 @@
   (append (gen-box-lines) (gen-cross-lines)))
   
 (define (get-opp color)
-  color)
+  (- 3 color))
 
 (define (blocked? pos vec)
   (define oppcolor (get-opp (3vf vec pos)))
@@ -118,4 +118,3 @@
                   (list->set lst2))))
   
   
-    
