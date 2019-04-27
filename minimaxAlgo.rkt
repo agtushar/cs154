@@ -16,7 +16,7 @@
                                                                               (3vs nw-state x 2)
                                                                               (cons (car temp) (cons bx x))))) p2b)))
                                                   (apply max1 vls)))]
-                                 [else (cons (car (mini-max nw-state 2 (- depth 1) phase cnt)) bx)]))]
+                                 [else (cons (car (mini-max nw-state 2 (- depth 1) phase cnt alph bet)) bx)]))]
           [(= cP 2) (begin (define nw-state (make-3d-vector 3 3 3 0))
                            (vec-copy nw-state state)
                            (3vs nw-state bx 2)
@@ -29,7 +29,7 @@
                                                                               (3vs nw-state x 1)
                                                                               (cons (car temp) (cons bx x))))) p2b)))
                                                   (apply min1 vls)))]
-                                 [else (cons (car (mini-max nw-state 1 (- depth 1) (if (> cnt 9) 1 0) (+ cnt 1))) bx)]))]
+                                 [else (cons (car (mini-max nw-state 1 (- depth 1) (if (> cnt 9) 1 0) (+ cnt 1) alph bet)) bx)]))]
           )
   )
 
@@ -47,7 +47,7 @@
                                                                               (3vs nw-state x 2)
                                                                               (cons (car temp) (cons move x))))) p2b)))
                                                   (apply max1 vls)))]
-                                 [else (cons (car (mini-max nw-state 2 (- depth 1) phase cnt)) move)]))]
+                                 [else (cons (car (mini-max nw-state 2 (- depth 1) phase cnt alph bet)) move)]))]
           [(= cP 2) (begin (define nw-state (make-3d-vector 3 3 3 0))
                            (vec-copy nw-state state)
                            (3vs nw-state (car move) 0)
@@ -61,7 +61,7 @@
                                                                               (3vs nw-state x 1)
                                                                               (cons (car temp) (cons move x)))) p2b))))
                                                   (apply min1 vls)))]
-                                 [else (cons (car (mini-max nw-state 1 (- depth 1) (if (> cnt 9) 1 0) (+ cnt 1))) move)]))]
+                                 [else (cons (car (mini-max nw-state 1 (- depth 1) (if (> cnt 9) 1 0) (+ cnt 1) alph bet)) move)]))]
           )
     )
   
