@@ -4,11 +4,14 @@
 (define (eval-phase vec color phase)
 
   (define pos (filter (lambda (x) (equal? (3vf vec x) color)) (gen-all-pos)))
+
+  (define (morris? row)
+      (foldl (lambda (index i) (and (= color (3vf vec index)) i)) #t row))
+  (define morris ;;closed morris row
+    (filter (lambda (x) (morris? x)) all-lines))
   
   (define (no-of-morris)  ;;has number of closed morris
-    (define (morris? row)
-      (foldl (lambda (index i) (and (= color (3vf vec index)) i)) #t row))
-    (count (lambda (x) (morris? x)) all-lines))
+    (length morris))
   
   (define (blocked-opp-pieces) ;;number of blocked opp pieces
     (define oppcolor (get-opp color))
@@ -21,10 +24,8 @@
                                             [(= col-at 0) 0]
                                             [else 50])))) 0 row) 2))
   
-  (define twoliners ;;twoliners should not get computed in phase 1
-  (if (not (equal? phase 1)) (filter (lambda (x) (twopiece? x)) all-lines)
-      #t))
-
+  (define twoliners (filter (lambda (x) (twopiece? x)) all-lines))
+  
   (define (no-of-pieces);;number of pieces
     (length pos))
 
@@ -39,13 +40,22 @@
 
   (define (closed-morris)
     (0-rel))
-
+  
+  (define opened-morris-elements ;;contains list of pos of neigh of same color for each 2 piece row
+    (map (lambda (x) (begin
+                          (define emppos (filter (lambda (index) (equal? (3vf vec index) 0)) x))
+                          (define neighpos (filter (lambda (y) (neigh emppos y)) (gen-all-pos)))
+                          (define rem-neigh-pos (foldl (lambda (y i) (remove y i)) neighpos x))
+                          (filter (lambda (index) (= (3vf vec index) color)) rem-neigh-pos)))
+         twoliners))
+  
   (define (opened-morris)
-    ...)
+    (foldr (lambda (x i) (+ (length x) i)) 0 opened-morris-elements))
 
   (define (double-morris)
-    ...)
-
+    (foldr + 0 (map (lambda (x) ;;x is list of neigh for a row
+                      (length (foldl (lambda (y i) (append (list-intersect x y) i)) '() morris)));;check if neigh is in any of the morris
+                         opened-morris-elements)))
   (define (win-conf)
     ...)
   
