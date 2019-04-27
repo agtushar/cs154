@@ -7,6 +7,7 @@
 
   (define (morris? row)
       (foldl (lambda (index i) (and (= color (3vf vec index)) i)) #t row))
+  
   (define morris ;;closed morris row
     (filter (lambda (x) (morris? x)) all-lines))
   
@@ -26,6 +27,7 @@
                                             [else 50])))) 0 row) 2))
   
   (define twoliners (filter (lambda (x) (twopiece? x)) all-lines))
+
   (define (no-of-pieces);;number of pieces
     (length pos))
 
@@ -34,15 +36,17 @@
 
   (define (no-of-3-pieces) ;;number of 3 pieces configuration
     (/ (count (lambda (x) (let ((com-el (list-intersect (car x) (cdr x))))
-                            (cond [(null? com-el) 0]
-                                  [(= 0 (3vf (car com-el))) 0]
-                                  [else 1])))
+                            (cond [(null? com-el) #f]
+                                  [(> (length com-el) 1) #f]
+                                  [(= 0 (3vf (car com-el))) #f]
+                                  [else #t])))
                (cartesian-product twoliners twoliners)) 2))
   
   (define (0-rel) 0)
 
   (define (closed-morris)
     (0-rel))
+
   
   (define opened-morris-elements ;;contains list of pos of neigh of same color for each 2 piece row
     (map (lambda (x) (begin
@@ -50,15 +54,16 @@
                           (define neighpos (filter (lambda (y) (neigh emppos y)) all-pos))
                           (define rem-neigh-pos (foldl (lambda (y i) (remove y i)) neighpos x))
                           (filter (lambda (index) (= (3vf vec index) color)) rem-neigh-pos)))
-         twoliners))
+         twoliners));; contains list of points which can make an open morris morris for each twoliner, list of list of list
   
   (define (opened-morris)
     (foldr (lambda (x i) (+ (length x) i)) 0 opened-morris-elements))
 
   (define (double-morris)
-    (foldr + 0 (map (lambda (x) ;;x is list of neigh for a row
+    (foldr + 0 (map (lambda (x) ;;x is list of neigh points for a particular twoliner
                       (length (foldl (lambda (y i) (append (list-intersect x y) i)) '() morris)));;check if neigh is in any of the morris
                          opened-morris-elements)))
+
   (define (win-conf)
     (if (= opp-pos 2) 1 0))
   
@@ -107,15 +112,10 @@
   (- 3 color))
 
 (define (blocked? pos vec)
-  (define oppcolor (get-opp (3vf vec pos)))
   (define neighpos (filter (lambda (x) (neigh pos x)) all-pos))
-  (foldl (lambda (x i) (and (= (3vf vec x) oppcolor) i)) #t neighpos))
+  (foldl (lambda (x i) (and (not (= (3vf vec x) 0)) i)) #t neighpos))
 
 (define (list-intersect lst1 lst2)
   (set->list
    (set-intersect (list->set lst1)
                   (list->set lst2))))
-;(3vs state '(0 0 0) 1)
-;(3vs state '(2 2 1) 2)
-;(3vs state '(0 1 0) 1)
-;(3vs state '(0 2 0) 2)
