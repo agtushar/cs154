@@ -48,6 +48,10 @@
 (define yc 0)
 (define my 0)
 (define flag 0)
+;(define x1 0)
+;(define x2 0)
+;(define y1 0)
+;(define y2 0)
 (define board (list 'e 'e 'e 'e 'e 'e 'e 'e 'e))
 ; Derive a new canvas (a drawing window) class to handle events
 (define my-canvas%
@@ -170,7 +174,7 @@
     (super-new)))
 
 (define frame3 (new frame%                    
-                   [label "Tic-Tac-Toe"]
+                   [label "Credits: 170100082"]
                    [width 1000]
                    [height 1000]))
 
@@ -184,6 +188,15 @@
              [paint-callback
               (lambda (canvas dc)
                  (send dc set-background (make-object color% "black"))
+                ;(cond [(> a 600) (displayln "Yes")])  
+                ;(send dc set-canvas-background "yellow")
+                ;(send event get-x)
+                ;(send msg set-label "Canvas mouse")
+                ;(define blue-brush (new brush% [color "blue"])) 
+                ;(send dc set-brush blue-brush)
+                ;(send dc set-background (make-object color% "black"))
+                ;(send dc set-background (make-object color% 220 200 255))
+                ;(send blue-brush set-stipple (read-bitmap "water.jpeg"))
                 (send dc set-scale 3 3)
                 (send dc set-text-foreground "blue")
                 (send dc set-brush "gray"'solid)
@@ -196,6 +209,9 @@
                 (send dc draw-line 210 10 210 211)
                 (send dc draw-line 10 77 310 77)
                 (send dc draw-line 10 144 310 144)
+     
+                ;(send canvas set-canvas-background "yellow")
+                ;(send dc draw-text "Hello World" 50 50)
                 )]))
 
 (define (pos-h a loc i)
@@ -266,6 +282,9 @@
         [(equal? (car suf) 'e) (begin
                                  (define x (change a 1 i 'c '()))
                                  (define z (change a 1 i 'p '()))
+                                 ;(displayln "Rajat")
+                                 ;(displayln z)
+                                 ;(displayln (win-check z 'p))
                                  (cond [(equal? (win-check x 'c) 'c) (cons 'c i)]
                                        [(equal? (win-check z 'p) 'p) (begin
                                                                        (cplay a (cdr suf) (+ i 1) i (cons 'c i)))]

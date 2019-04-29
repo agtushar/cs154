@@ -111,7 +111,7 @@
                                       (if (and (= clr 1) (or (all-in-mill state 1) (not (checkS state bx 1)))) (begin (set! wait 0) (set! cP 1) (3vs state bx 0)
                                                                                      (set! cnt (+ 1 cnt))
                                                                                      (if (= cnt 9) (set! phase 1) #t))
-                                          (displayln "Not Correct Rectangle")))])]) 
+                                          (displayln "Not Correct Rectangle")))])])
   )
 
 
@@ -141,11 +141,3 @@
   (3d-vector-set! vec (car l) (cadr l) (caddr l) val))
 
 (define state (make-3d-vector 3 3 3 0))
-
-(define (check-loss p)
-  (begin
-    (define allp (length (filter (lambda (x) (= (3vf state x) p)) all-pos)))
-    (define allopp (length (filter (lambda (x) (= (3vf state x) (- 3 p))) all-pos)))
-    (cond [(and (>= allopp 3) (< allp 3)) #t]
-          [else #f])))
-  

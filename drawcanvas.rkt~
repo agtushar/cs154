@@ -73,76 +73,41 @@
 ;;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-(define move1 0)
-(define move2 0)
-(define move3 0)
-(define over1 #f)
-(define over2 #f)
-(define over3 #f)
-
 (define my-canvas1%
   (class canvas%
     ; Define overriding method to handle mouse events
     (super-new)
     (define/override (on-event event)
-      (begin
       (if (send event button-down? 'left)
-          (cond [over1 (send msg1 set-label "Please start new-game")]
-                [else
           (let* ((xc (send event get-x))
                  (yc (send event get-y))
                  (box (get-closest xc yc)))
-            (if (list? box) (begin (set! move1 (+ move1 1)) (st-trans2 box) (recolor-state state)) (displayln "Click on rectangle region only")))])
-          (display ""))
-          (cond [(and (> move1 9) (check-loss 1)) (begin
-                                                    (send msg1 set-label "Player Won")
-                                                    (set! over1 #t))]
-                [(and (> move1 9) (check-loss 2)) (begin
-                                                    (send msg1 set-label "Computer Won")
-                                                    (set! over1 #t))]))
-          )))
-
+            (if (list? box) (begin (st-trans2 box) (recolor-state state)) (displayln "Click on rectangle region only")))
+          (display "")
+          ))))
 (define my-canvas2%
   (class canvas%
     ; Define overriding method to handle mouse events
     (super-new)
     (define/override (on-event event)
-      (begin
       (if (send event button-down? 'left)
-          (cond [over2 (send msg2 set-label "Please start new-game")]
-                [else
           (let* ((xc (send event get-x))
                  (yc (send event get-y))
                  (box (get-closest xc yc)))
-            (if (list? box) (begin (set! move2 (+ move2 1)) (st-trans1 box) (recolor-state state)) (displayln "Click on rectangle region only")))])
-          (display ""))
-          (cond [(and (> move2 9) (check-loss 1)) (begin
-                                                    (send msg2 set-label "Computer Won")
-                                                    (set! over2 #t))]
-                [(and (> move2 9) (check-loss 2)) (begin
-                                                    (send msg2 set-label "Player Won")
-                                                    (set! over2 #t))]))
-          )))
+            (if (list? box) (begin (st-trans1 box) (recolor-state state)) (displayln "Click on rectangle region only")))
+          (display "")
+          ))))
 (define my-canvas3%
   (class canvas%
     ; Define overriding method to handle mouse events
     (super-new)
     (define/override (on-event event)
-      (begin
       (if (send event button-down? 'left)
-          (cond [over3 (send msg3 set-label "Please start new-game")]
-                [else
           (let* ((xc (send event get-x))
                  (yc (send event get-y))
                  (box (get-closest xc yc)))
-            (if (list? box) (begin (set! move3 (+ move3 1)) (st-trans box) (recolor-state state)) (displayln "Click on rectangle region only")))])
-          (display ""))
-          (cond [(and (> move3 18) (check-loss 1)) (begin
-                                                     (send msg3 set-label "Player2 Won")
-                                                     (set! over3 #t))]
-                [(and (> move3 18) (check-loss 2)) (begin
-                                                     (send msg3 set-label "Player1 Won")
-                                                     (set! over3 #t))])
+            (if (list? box) (begin (st-trans box) (recolor-state state)) (displayln "Click on rectangle region only")))
+          (display "")
           ))))
 
 ;;------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -153,29 +118,14 @@
 ; Get the canvas's drawing context
 (define dc (send canvas1 get-dc))
 (define dc1 (send canvas1 get-dc))
-(define msg1 (new message% [parent frame00]
-                          [label "Game in progress ..."] 
-                          [min-height 40]
-                          ;[color "black"]
-                          [font (make-object font% 20 'default 'normal 'bold)])) 
   
 (define canvas2 (new my-canvas2% [parent frame11])) 
 ; Get the canvas's drawing context
 (define dc2 (send canvas2 get-dc))
-(define msg2 (new message% [parent frame11]
-                          [label "Game in progress ..."] 
-                          [min-height 40]
-                          ;[color "black"]
-                          [font (make-object font% 20 'default 'normal 'bold)])) 
 
 (define canvas3 (new my-canvas3% [parent frame22])) 
 ; Get the canvas's drawing context
 (define dc3 (send canvas3 get-dc))
-(define msg3 (new message% [parent frame22]
-                          [label "Game in progress ..."] 
-                          [min-height 40]
-                          ;[color "black"]
-                          [font (make-object font% 20 'default 'normal 'bold)])) 
 
 ; Make some pens and brushes
 (define no-pen (make-object pen% "BLACK" 1 'transparent))
